@@ -340,14 +340,22 @@ def get_token() -> str:
     except FileNotFoundError:
         print("Token not found in documents:",path)
         try:
-            path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "token.key")
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "token.key")
             with open(path, "rb") as decrypted_file:
                 decrypted_token = decrypted_file.read()
             key = Fernet(get_key())
             return key.decrypt(decrypted_token).decode()
         except FileNotFoundError:
-            print("Token not found in outer directory:",path)
-            return ""
+            print("Token not found in directory:",path)
+            try:
+                path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "token.key")
+                with open(path, "rb") as decrypted_file:
+                    decrypted_token = decrypted_file.read()
+                key = Fernet(get_key())
+                return key.decrypt(decrypted_token).decode()
+            except FileNotFoundError:
+                print("Token not found in outer directory:",path)
+                return ""
 
 #GET KEY
 def get_key() -> str:
