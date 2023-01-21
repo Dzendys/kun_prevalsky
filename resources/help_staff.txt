@@ -28,8 +28,8 @@
 
 *resources/permissions.txt*
 **!ks admin_permission**
-**!ks add_permission** => **syntax:** *!ks add_permission (user id, username with tag - without space)*
-**!ks remove_permission** => **syntax:** *!ks remove_permission (user id, username with tag - without space)*
+**!ks add_permissions** => **syntax:** *!ks add_permission (user id, username with tag - without space)*
+**!ks remove_permissions** => **syntax:** *!ks remove_permission (user id, username with tag - without space)*
 **!ks list_permissions**
 **!ks len_permissions**
 
@@ -43,12 +43,6 @@
 **!ks vtip**
 
 🐴 => *To jsem já, jsem ti k službám, brrrrrr!🐴*
-
-*resources*
-**!ks import** - imports files => file has to be in Documents named as "resources.zip"
-**!ks export** - exports files as .zip to Documents
-**!ks list_files**
-**!ks len_files**
 
 *end program*
 **!ks exit**
