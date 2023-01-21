@@ -4,213 +4,116 @@ import random
 import Klaudie_simulator
 import Snowglobe
 import functions
-import backup
 
 #MAIN FUNC
 def get_response(message, user_message: str) -> str:
     """Returns responses using functions in functions.py"""
     p_message:str = user_message.strip() #gets message
-    admin_permission: bool = functions.check_permission(str(message.author.id),str(message.author.name), str(message.author.discriminator))
+    admin_permission: bool = functions.check_permission(str(message.author.id),str(message.author.name) + "#" + str(message.author.discriminator))
     permission_deny_message: str = "You **don't** have permission to do that, brrrr!"
+    items: list = ["rozvrh", "stav", "reseni", "permissions"]
 
     #ASLEEP
     if random.randint(1,25) == 1:
         return "Zzzzz 😴"
 
-
     #HELP
-    ###
-    #HELP
-    if p_message == 'help':
-        return functions.help_()
+    if p_message.startswith("help"):
+        #HELP
+        if p_message == 'help':
+            return functions.get(file_name="help")
 
-    #HELP STAFF
-    if p_message == 'help_staff':
-        if not admin_permission:
-            return permission_deny_message
-        return functions.help_staff()
-    ###
-
+        #HELP STAFF
+        if p_message == 'help_staff':
+            if not admin_permission:
+                return permission_deny_message
+            return functions.get(file_name="help_staff")
 
     #ROZVRH
-    ###
-    #ROZVRH
-    if p_message == 'rozvrh':
+    if p_message.startswith("rozvrh"):
+        if len(p_message) > len("rozvrh"):
+            rozvrh_index: str = p_message[6:].strip()
+            return functions.rozvrh(rozvrh_index=rozvrh_index)
         return functions.rozvrh()
 
-    #ROZVRH RIGGED
-    if p_message.startswith("rozvrh") and len(p_message) > len("rozvrh"):
+    #ADD
+    if p_message.startswith("add_"):
+        if not admin_permission: #check permission
+            return permission_deny_message
+        file_name: str = p_message[4:].strip().split(" ")[0]
+        if file_name not in items: #check valid list
+            return f"Seznam **{file_name}** neeviduju, brrrr!"
+        if len(p_message) <= len(f"add_{file_name}"): #check empty
+            return "Zapomněl jsi, cos chtěl přidat, brrrr!"
+        if file_name == "rozvrh":
+            new_choice: str = p_message[10:].strip()
+            if new_choice[0].islower():
+                new_choice = new_choice[0].upper() + new_choice[1:]
+            if new_choice[-1]!=".":
+                new_choice +="."
+        elif file_name == "stav":
+            new_choice: str = p_message[8:].strip()
+            if new_choice.startswith("Mám se zle, protože "):
+                new_choice = new_choice[20:]
+            if new_choice[0].isupper():
+                new_choice = new_choice[0].lower() + new_choice[1:]
+            if new_choice[-1] == ".":
+                new_choice = new_choice[:-1]
+        elif file_name == "reseni":
+            new_choice: str = p_message[10:].strip()
+            if new_choice[0].islower():
+                new_choice = new_choice[0].upper() + new_choice[1:]
+            if new_choice[-1] != ".":
+                new_choice = new_choice+"."
+        elif file_name == "permissions":
+            new_choice: str = p_message[15:].strip()
+        return functions.add(file_name=file_name,new_item=new_choice)
+
+    #REMOVE
+    if p_message.startswith("remove_"):
         if not admin_permission:
             return permission_deny_message
-        rozvrh_index: str = p_message[6:].strip()
-        return functions.rozvrh_rigged(rozvrh_index)
+        file_name: str = p_message[7:].strip().split(" ")[0]
+        if file_name not in items: #check valid list
+            return f"Seznam **{file_name}** neeviduju, brrrr!"
+        if file_name == "rozvrh":
+            index: str = p_message[13:].strip()
+        elif file_name == "stav":
+            index: str = p_message[8:].strip()
+        elif file_name == "reseni":
+            index: str = p_message[10:].strip()
+        elif file_name == "permissions":
+            index: str = p_message[18:].strip()
+        return functions.remove(file_name=file_name, index=index)
 
-    #ADD ROZVRH
-    if p_message.startswith("add_rozvrh") and len(p_message) > len("add_rozvrh"):
-        if not admin_permission:
+    #LEN
+    if p_message.startswith("len_"):
+        if not admin_permission: #check permission
             return permission_deny_message
-        rozvrh_add: str = p_message[10:].strip()
-        return functions.add_rozvrh(rozvrh_add)
+        file_name: str = p_message[4:].strip()
+        if file_name not in items: #check valid list
+            return f"Seznam **{file_name}** neeviduju, brrrr!"
+        return functions.len_(file_name=file_name)
 
-    #REMOVE ROZVRH
-    if p_message.startswith("remove_rozvrh") and len(p_message) > len("remove_rozvrh"):
-        if not admin_permission:
+    #LIST
+    if p_message.startswith("list_"):
+        if not admin_permission: #check permission
             return permission_deny_message
-        rozvrh_remove: str = p_message[13:].strip()
-        return functions.remove_rozvrh(rozvrh_remove)
+        file_name: str = p_message[5:].strip()
+        if file_name not in items or file_name == "snowglobe": #check valid list
+            return f"Seznam **{file_name}** neeviduju, brrrr!"
+        return functions.list_(file_name=file_name)
 
-    #LIST ROZVRH
-    if p_message == "list_rozvrh":
-        if not admin_permission:
-            return permission_deny_message
-        return functions.list_rozvrh()
-
-    #LEN ROZVRH
-    if p_message == "len_rozvrh":
-        return functions.len_rozvrh()
-    ###
-
-
-    #STAV + RESENI
-    ###
-    #STAV
-    if p_message == "stav":
-        return functions.stav()
-
-    #STAV RIGGED
-    if p_message.startswith("stav") and len(p_message.strip()) > len("stav"):
-        if not admin_permission:
-            return permission_deny_message
-        indexes: list = functions.valid_stav_rigged(p_message[4:].strip())
-        if len(indexes) == 2:
-            return functions.stav_reseni_rigged(indexes[0], indexes[1])
-        if len(indexes) == 1:
-            return functions.stav_rigged(indexes[0])
-        return "Musíš napsat číslo indexu, brrrr!"
-
-    #ADD STAV
-    if p_message.startswith("add_stav") and len(p_message) > len("add_stav"):
-        if not admin_permission:
-            return permission_deny_message
-        return functions.add_stav(p_message[8:].strip())
-
-    #ADD RESENI
-    if p_message.startswith("add_reseni") and len(p_message) > len("add_reseni"):
-        if not admin_permission:
-            return permission_deny_message
-        return functions.add_reseni(p_message[10:].strip())
-
-    #REMOVE STAV
-    if p_message.startswith("remove_stav") and len(p_message) > len("remove_stav"):
-        if not admin_permission:
-            return permission_deny_message
-        return functions.remove_stav(p_message[11:].strip())
-
-    #REMOVE RESENI
-    if p_message.startswith("remove_reseni") and len(p_message) > len("remove_reseni"):
-        if not admin_permission:
-            return permission_deny_message
-        return functions.remove_reseni(p_message[13:].strip())
-
-    #LIST STAV
-    if p_message == "list_stav":
-        if not admin_permission:
-            return permission_deny_message
-        return functions.list_stav()
-
-    #LEN STAV
-    if p_message == "len_stav":
-        if not admin_permission:
-            return permission_deny_message
-        return functions.len_stav()
-
-    #LIST RESENI
-    if p_message == "list_reseni":
-        if not admin_permission:
-            return permission_deny_message
-        return functions.list_reseni()
-
-    #LEN RESENI
-    if p_message == "len_reseni":
-        if not admin_permission:
-            return permission_deny_message
-        return functions.len_reseni()
-    ###
-
-
-    #PERMISSIONS
-    ###
     #ADMIN PERMISSION
     if p_message == "admin_permission":
         if not admin_permission:
             return "**Nemáš** *vyšší* pravomoce."
         return "**Máš** *vyšší* pravomoce."
 
-    #ADD PERMISSION
-    if p_message.startswith("add_permission") and len(p_message) > len("add_permission"):
-        if not admin_permission:
-            return permission_deny_message
-        user: list = functions.valid_user(p_message[14:])
-        if user: #empty list "is" False
-            return functions.add_permission(user[0], user[1], user[2])
-        return "Špatný syntax, brrrr!"
-
-    #REMOVE PERMISSION
-    if p_message.startswith("remove_permission") and len(p_message) > len("remove_permission"):
-        if not admin_permission:
-            return permission_deny_message
-        user: list = functions.valid_user(p_message[17:])
-        if user: #empty list "is" False
-            return functions.remove_permission(user[0], user[1], user[2])
-        return "Špatný syntax, brrrr!"
-
-    #LIST PERMISSIONS
-    if p_message == "list_permissions":
-        return functions.list_permissions()
-
-    # LEN PERMISSIONS
-    if p_message == "len_permissions":
-        return functions.len_permissions()
-    ###
-
-    #FILES
-    ###
-    #IMPORT
-    if p_message == "import":
-        if not admin_permission:
-            return permission_deny_message
-        return_value: str = backup.import_()
-        if return_value != "Nemohl jsem najít **resources.zip** v adresáři, brrrr!":
-            sys.exit()
-        return return_value
-
-    #EXPORT
-    if p_message == "export":
-        if not admin_permission:
-            return permission_deny_message
-        backup.export()
-        sys.exit()
-
     #EXIT
     if p_message == "exit":
         sys.exit()
 
-    #LEN FILES
-    if p_message == "len_files":
-        if not admin_permission:
-            return permission_deny_message
-        return backup.len_files()
-
-    #LIST FILES
-    if p_message == "list_files":
-        if not admin_permission:
-            return permission_deny_message
-        return backup.list_files()
-    ###
-
-
-    #OTHER
-    ###
     #EASTER EGG
     if p_message == '🐴':
         return "To jsem já, jsem ti k službám, brrrrrr!🐴"
@@ -227,20 +130,11 @@ def get_response(message, user_message: str) -> str:
     if p_message == "snowglobe":
         return Snowglobe.snowglobe()
 
-    #LIST SNOWGLOBE
-    if p_message == "list_snowglobe":
-        if not admin_permission:
-            return permission_deny_message
-        with open("resources/snowglobe.txt","r",encoding="utf8") as file:
-            return file.read()
-
     #GITHUB
     if p_message == "github":
         return "https://github.com/Dzendys/kun_prevalsky"
 
     #KLAUDIE SIMULATOR
-    else:
-        if random.randint(1,15) != 1:
-            return Klaudie_simulator.klaudie_simulator(p_message)
-        return "lol ne 😂😂😂😂"
-    ###
+    if random.randint(1,15) != 1:
+        return Klaudie_simulator.klaudie_simulator(p_message)
+    return "lol ne 😂😂😂😂"
