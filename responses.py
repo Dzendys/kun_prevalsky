@@ -35,6 +35,17 @@ def get_response(message, user_message: str) -> str:
             rozvrh_index: str = p_message[6:].strip()
             return functions.rozvrh(rozvrh_index=rozvrh_index)
         return functions.rozvrh()
+    
+    #STAV
+    if p_message.startswith("stav"):
+        if len(p_message) > len("stav"):
+            if len(p_message[4:].strip().split(" ", 1)) == 2:
+                stav_index: str = p_message[4:].strip().split(" ", 1)[0]
+                reseni_index: str = p_message[4:].strip().split(" ", 1)[1]
+                return functions.stav(stav_index, reseni_index)
+            stav_index: str = p_message[4:].strip()
+            return functions.stav(stav_index)
+        return functions.stav()
 
     #ADD
     if p_message.startswith("add_"):
