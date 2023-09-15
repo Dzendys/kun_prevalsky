@@ -1,0 +1,8 @@
+{
+  "title": "Brrrr! Jmenuji se Kůň - Kůň Převalský jméno mé. Nejsem zas tak chytrý, ale i tak zvládnu pár věcí.",
+  "description": "Prefix: **!ks**",
+  "commands": {
+    "!ks program": "Co mám dneska na programu?",
+    "!ks stav": "Jak se mám v tuto chvíli?"
+  }
+}
