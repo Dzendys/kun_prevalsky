@@ -4,6 +4,7 @@
   "commands": {
     "/program": "Co mám dneska na programu?",
     "/stav": "Jak se mám v tuto chvíli?",
+    "/vt": "Jaké třídy jsou aktuálně volné?",
     "/snowglobe": "Zagambli si o tank jako o Vánocích ve WoT Bliz!"
   }
 }
